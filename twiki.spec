@@ -6,6 +6,7 @@
 %bcond_without	intl	# experimental i18n support; see http://twiki.org/cgi-bin/view/TWiki.TWikiInstallationGuide
 #
 Summary:	TWiki Collaborative Web Space (WikiClone)
+Summary(pl):	TWiki (WikiClone) - narzêdzie do pracy grupowej
 Name:		twiki
 Version:	20040902
 Release:	0.43
@@ -25,18 +26,27 @@ Requires:	crondaemon
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define		_sysconfdir /etc/%{name}
-%define		_appdir %{_datadir}/%{name}
-%define		_appdatadir /var/lib/%{name}
-%define		_applogdir /var/log/%{name}
+%define		_sysconfdir	/etc/%{name}
+%define		_appdir		%{_datadir}/%{name}
+%define		_appdatadir	/var/lib/%{name}
+%define		_applogdir	/var/log/%{name}
 
 %description
 Welcome to TWiki, a flexible, powerful, and easy to use enterprise
 collaboration platform. It is a structured Wiki, typically used to run
 a project development space, a document management system, a knowledge
-base, or any other groupware tool, on an intranet or on the internet.
+base, or any other groupware tool, on an intranet or on the Internet.
 Web content can be created collaboratively by using just a browser.
 Developers can create new web applications based on a Plugin API.
+
+%description -l pl
+TWiki to elastyczna, potê¿na i ³atwa w u¿yciu platforma do pracy
+zespo³owej. Jest to strukturalne Wiki, zwykle u¿ywane do prowadzenia
+przestrzeni rozwojowej projektów, systemu zarz±dzania dokumentami,
+bazy wiedzy i innych narzêdzi pracy grupowej w intranecie lub
+Internecie. Tre¶æ WWW mo¿e byæ tworzona wspólnie przy u¿yciu samej
+przegl±darki. Deweloperzy mog± tworzyæ nowe aplikacje WWW w opaciu o
+API wtyczek.
 
 %prep
 %setup -q -c
