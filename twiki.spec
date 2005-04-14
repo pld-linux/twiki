@@ -1,6 +1,5 @@
 # TODO
 # - secure access by default
-# - handle upgrades. /var/lib/twiki/data needs all %config?
 # - installation guide mentioned cron. where's the cron scripts?
 #
 # Conditional build:
@@ -9,7 +8,7 @@
 Summary:	TWiki Collaborative Web Space (WikiClone)
 Name:		twiki
 Version:	20040902
-Release:	0.28
+Release:	0.43
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.twiki.org/swd/TWiki%{version}.tar.gz
@@ -28,6 +27,8 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_sysconfdir /etc/%{name}
 %define		_appdir %{_datadir}/%{name}
+%define		_appdatadir /var/lib/%{name}
+%define		_applogdir /var/log/%{name}
 %define		_apache1dir	/etc/apache
 %define		_apache2dir	/etc/httpd
 
@@ -44,6 +45,7 @@ Developers can create new web applications based on a Plugin API.
 mv twiki/* .
 mv bin/testenv .
 mv lib/TWiki.cfg .
+rm -f data/mime.types
 
 # adjust RCS content for Apache run-time environment
 sed -i -e '1,10s/nobody:/http:/' data/*/*,v
@@ -51,12 +53,11 @@ sed -i -e 's/nobody/http/g' testenv
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_appdir}/bin,%{_sysconfdir},/var/lib/%{name}}
-
+install -d $RPM_BUILD_ROOT{%{_appdir}/bin,%{_sysconfdir},%{_appdatadir},%{_applogdir}}
 
 cp -a bin/* $RPM_BUILD_ROOT%{_appdir}/bin
 cp -a lib templates $RPM_BUILD_ROOT%{_appdir}
-cp -a data pub $RPM_BUILD_ROOT/var/lib/%{name}
+cp -a data pub $RPM_BUILD_ROOT%{_appdatadir}
 
 sed -i -e 's,^\$twikiLibPath.*,$twikiLibPath = q(%{_appdir}/lib);,' \
 	$RPM_BUILD_ROOT%{_appdir}/bin/setlib.cfg
@@ -68,17 +69,17 @@ sed -i -e '
 %{?debug:sed -e 's,require "TWiki.cfg",require "%{_sysconfdir}/TWiki.pl",' testenv > $RPM_BUILD_ROOT%{_appdir}/bin/testenv}
 
 sed -e '
-	s,!FILE_path_to_TWiki!/data,/var/lib/%{name}/data,
+	s,!FILE_path_to_TWiki!/data,%{_appdatadir}/data,
 	s,!URL_path_to_TWiki!,/%{name},g
 ' bin/.htaccess.txt > htaccess.txt
 
 sed -e '
 	s,http://your.domain.com,http://localhost,g
-	s,/home/httpd/twiki/pub,/var/lib/%{name}/pub,
+	s,/home/httpd/twiki/pub,%{_appdatadir}/pub,
 	s,/home/httpd/twiki/templates,%{_appdir}/templates,
-	s,/home/httpd/twiki/data,/var/lib/%{name}/data,
+	s,/home/httpd/twiki/data,%{_appdatadir}/data,
 	s,$dataDir/mime.types,/etc/mime.types,
-	s,^\(\$logDir = *\)".*,\1"/var/lib/%{name}/data";,
+	s,^\(\$logDir *= *\)".*,\1"%{_applogdir}";,
 	%{?with_intl:s,^\$useLocale = 0;,$useLocale = 1;,}
 ' TWiki.cfg > $RPM_BUILD_ROOT%{_sysconfdir}/TWiki.pl
 
@@ -90,12 +91,18 @@ ScriptAlias /%{name}/bin %{_appdir}/bin
 	$(cat htaccess.txt)
 </Directory>
 
-Alias /%{name}/pub /var/lib/%{name}/pub
-<Directory /var/lib/%{name}/pub>
+Alias /%{name}/pub %{_appdatadir}/pub
+<Directory %{_appdatadir}/pub>
 	Allow from all
 </Directory>
 # vim: filetype=apache ts=4 sw=4 et
 EOF
+
+echo '%%defattr(660,root,http,770)' > files.data
+find $RPM_BUILD_ROOT%{_appdatadir} -type d | \
+	sed -e "s,^$RPM_BUILD_ROOT,%%dir ," >> files.data
+find $RPM_BUILD_ROOT%{_appdatadir} -type f | \
+	sed -e "s#^$RPM_BUILD_ROOT#%%config(noreplace,missingok) %%verify(not md5 mtime size) #" >> files.data
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -152,7 +159,7 @@ if [ "$1" = "0" ] || [ "$2" = "0" ]; then
 	fi
 fi
 
-%files
+%files -f files.data
 %defattr(644,root,root,755)
 %doc *.txt
 %dir %{_sysconfdir}
@@ -166,7 +173,4 @@ fi
 %{_appdir}/lib
 %{_appdir}/templates
 
-%defattr(660,root,http,770)
-%dir /var/lib/%{name}
-/var/lib/%{name}/data
-/var/lib/%{name}/pub
+%attr(770,root,http) %{_applogdir}
