@@ -1,5 +1,7 @@
 # TODO
 # - secure access by default
+# - handle upgrades. /var/lib/twiki/data needs all %config?
+# - installation guide mentioned cron. where's the cron scripts?
 #
 # Conditional build:
 %bcond_without	intl	# experimental i18n support; see http://twiki.org/cgi-bin/view/TWiki.TWikiInstallationGuide
