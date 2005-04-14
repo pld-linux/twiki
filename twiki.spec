@@ -29,8 +29,6 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define		_appdir %{_datadir}/%{name}
 %define		_appdatadir /var/lib/%{name}
 %define		_applogdir /var/log/%{name}
-%define		_apache1dir	/etc/apache
-%define		_apache2dir	/etc/httpd
 
 %description
 Welcome to TWiki, a flexible, powerful, and easy to use enterprise
@@ -109,14 +107,14 @@ rm -rf $RPM_BUILD_ROOT
 
 %triggerin -- apache1 >= 1.3.33-2
 %{?debug:set -x; echo "triggerin apache1 %{name}-%{version}-%{release} 1:[$1]; 2:[$2]"}
-if [ "$1" = "1" ] && [ "$2" = "1" ] && [ -d %{_apache1dir}/conf.d ]; then
-	ln -sf %{_sysconfdir}/apache-%{name}.conf %{_apache1dir}/conf.d/99_%{name}.conf
+if [ "$1" = "1" ] && [ "$2" = "1" ] && [ -d /etc/apache/conf.d ]; then
+	ln -sf %{_sysconfdir}/apache-%{name}.conf /etc/apache/conf.d/99_%{name}.conf
 	if [ -f /var/lock/subsys/apache ]; then
 		/etc/rc.d/init.d/apache restart 1>&2
 	fi
 else
 	# restart apache if the config symlink is there
-	if [ -L %{_apache1dir}/conf.d/99_%{name}.conf ]; then
+	if [ -L /etc/apache/conf.d/99_%{name}.conf ]; then
 		/etc/rc.d/init.d/apache restart 1>&2
 	fi
 fi
@@ -125,8 +123,8 @@ fi
 %{?debug:set -x; echo "triggerun apache1 %{name}-%{version}-%{release}: 1:[$1]; 2:[$2]"}
 # remove link if eighter of the packages are gone
 if [ "$1" = "0" ] || [ "$2" = "0" ]; then
-	if [ -L %{_apache1dir}/conf.d/99_%{name}.conf ]; then
-		rm -f %{_apache1dir}/conf.d/99_%{name}.conf
+	if [ -L /etc/apache/conf.d/99_%{name}.conf ]; then
+		rm -f /etc/apache/conf.d/99_%{name}.conf
 		if [ -f /var/lock/subsys/apache ]; then
 			/etc/rc.d/init.d/apache restart 1>&2
 		fi
@@ -135,14 +133,14 @@ fi
 
 %triggerin -- apache >= 2.0.0
 %{?debug:set -x; echo "triggerin apache2 %{name}-%{version}-%{release}: 1:[$1]; 2:[$2]"}
-if [ "$1" = "1" ] && [ "$2" = "1" ] && [ -d %{_apache2dir}/httpd.conf ]; then
-	ln -sf %{_sysconfdir}/apache-%{name}.conf %{_apache2dir}/httpd.conf/99_%{name}.conf
+if [ "$1" = "1" ] && [ "$2" = "1" ] && [ -d /etc/httpd/httpd.conf ]; then
+	ln -sf %{_sysconfdir}/apache-%{name}.conf /etc/httpd/httpd.conf/99_%{name}.conf
 	if [ -f /var/lock/subsys/httpd ]; then
 		/etc/rc.d/init.d/httpd restart 1>&2
 	fi
 else
 	# restart apache if the config symlink is there
-	if [ -L %{_apache2dir}/httpd.conf/99_%{name}.conf ]; then
+	if [ -L /etc/httpd/httpd.conf/99_%{name}.conf ]; then
 		/etc/rc.d/init.d/apache restart 1>&2
 	fi
 fi
@@ -151,8 +149,8 @@ fi
 %{?debug:set -x; echo "triggerun apache2 %{name}-%{version}-%{release}: 1:[$1]; 2:[$2]"}
 # remove link if eighter of the packages are gone
 if [ "$1" = "0" ] || [ "$2" = "0" ]; then
-	if [ -L %{_apache2dir}/httpd.conf/99_%{name}.conf ]; then
-		rm -f %{_apache2dir}/httpd.conf/99_%{name}.conf
+	if [ -L /etc/httpd/httpd.conf/99_%{name}.conf ]; then
+		rm -f /etc/httpd/httpd.conf/99_%{name}.conf
 		if [ -f /var/lock/subsys/httpd ]; then
 			/etc/rc.d/init.d/httpd restart 1>&2
 		fi
