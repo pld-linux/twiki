@@ -151,7 +151,7 @@ if [ "$1" = "1" ] && [ "$2" = "1" ] && [ -d /etc/httpd/httpd.conf ]; then
 else
 	# restart apache if the config symlink is there
 	if [ -L /etc/httpd/httpd.conf/99_%{name}.conf ]; then
-		/etc/rc.d/init.d/apache restart 1>&2
+		/etc/rc.d/init.d/httpd restart 1>&2
 	fi
 fi
 
