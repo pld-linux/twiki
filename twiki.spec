@@ -1,6 +1,7 @@
 # TODO
 # - secure access by default
 # - installation guide mentioned cron. where's the cron scripts?
+# - add webapps support or something
 #
 # Conditional build:
 %bcond_without	intl	# experimental i18n support; see http://twiki.org/cgi-bin/view/TWiki.TWikiInstallationGuide
@@ -16,13 +17,13 @@ Source0:	http://www.twiki.org/swd/TWiki%{version}.tar.gz
 # Source0-md5:	d04b2041d83dc6c97905faa1c6b9116d
 URL:		http://www.twiki.org/
 BuildRequires:	sed >= 4.0
-Requires:	webserver = apache
-Requires:	perl-base >= 1:5.6.2
-Requires:	perl-Unicode-MapUTF8
-Requires:	rcs >= 5.7
+Requires:	crondaemon
 Requires:	diffutils >= 2.7
 Requires:	grep
-Requires:	crondaemon
+Requires:	perl-Unicode-MapUTF8
+Requires:	perl-base >= 1:5.6.2
+Requires:	rcs >= 5.7
+Requires:	webserver = apache
 Conflicts:	apache1 < 1.3.33-2
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
