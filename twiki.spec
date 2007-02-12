@@ -7,7 +7,7 @@
 %bcond_without	intl	# experimental i18n support; see http://twiki.org/cgi-bin/view/TWiki.TWikiInstallationGuide
 #
 Summary:	TWiki Collaborative Web Space (WikiClone)
-Summary(pl.UTF-8):   TWiki (WikiClone) - narzędzie do pracy grupowej
+Summary(pl.UTF-8):	TWiki (WikiClone) - narzędzie do pracy grupowej
 Name:		twiki
 Version:	20040902
 Release:	0.43
